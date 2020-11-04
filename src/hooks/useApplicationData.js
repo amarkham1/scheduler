@@ -1,13 +1,10 @@
 import { useReducer, useEffect } from 'react';
 import axios from 'axios';
+import reducer, { SET_DAY, SET_INTERVIEW, SET_APPLICATION_DATA } from "reducers/application";
 
-const GET_DAYS = "http://localhost:8001/api/days";
-const GET_APPOINTMENTS = "http://localhost:8001/api/appointments";
-const GET_INTERVIEWERS = "http://localhost:8001/api/interviewers";
-
-const SET_DAY = "SET_DAY";
-const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
-const SET_INTERVIEW = "SET_INTERVIEW";
+const GET_DAYS = "/api/days";
+const GET_APPOINTMENTS = "/api/appointments";
+const GET_INTERVIEWERS = "/api/interviewers";
 
 const initialState = {
   day: "Monday",
@@ -16,45 +13,10 @@ const initialState = {
   interviewers: {}
 }
 
-function reducer(state, action) {
-  switch (action.type) {
-    case SET_DAY:
-      return { ...state, day: action.day }
-    case SET_APPLICATION_DATA:
-      return { 
-        ...state,
-        days: action.days,
-        appointments: action.appointments,
-        interviewers: action.interviewers
-      }
-    case SET_INTERVIEW:
-      const appointment = {
-        ...state.appointments[action.id],
-        interview: action.interview ? { ...action.interview } : null
-      };
-  
-      const appointments = {
-        ...state.appointments,
-        [action.id]: appointment 
-      };
-
-      return {
-        ...state,
-        appointments,
-        days: action.days
-      }
-  default:
-    throw new Error(
-      `Tried to reduce with unsupported action type: ${action.type}`
-    );
-  }
-}
-
 export default function useApplicationData() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const setDay = day => dispatch({ type: SET_DAY, day })
-
   useEffect(() => {
     Promise.all([
       axios.get(GET_DAYS),
@@ -78,13 +40,17 @@ export default function useApplicationData() {
   }, []);
 
   function bookInterview(id, interview) {
+    let update = false;
+    if (state.appointments[id].interview) {
+      update = true;
+    }
     return axios.put(`/api/appointments/${id}`, { interview })
     .then(() => {
       const days = state.days.map(day => {
         if (day.name === state.day) {
           return {
             ...day,
-            spots: --day.spots
+            spots: update ? day.spots : --day.spots
           }
         }
         else {
@@ -96,7 +62,7 @@ export default function useApplicationData() {
   }
 
   function cancelInterview(id) {
-    return axios.delete(`api/appointments/${id}`)
+    return axios.delete(`/api/appointments/${id}`)
     .then(() => {
       const days = state.days.map(day => {
         if (day.name === state.day) {
