@@ -26,6 +26,7 @@ export default function Appointment(props) {
     props.interview ? SHOW : EMPTY
   );
 
+  // ensures proper interview or empty Add button shown
   useEffect(() => {
     if (props.interview && mode === EMPTY) {
       transition(SHOW);
@@ -35,6 +36,7 @@ export default function Appointment(props) {
     }
   }, [props.interview, transition, mode]);
 
+  // saves a new interview or updates an existing one
   function save(name, interviewer) {
     const interview = {
       student: name,

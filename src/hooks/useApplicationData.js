@@ -16,7 +16,9 @@ const initialState = {
 export default function useApplicationData() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const setDay = day => dispatch({ type: SET_DAY, day })
+  const setDay = day => dispatch({ type: SET_DAY, day });
+
+  // fetches all data from the scheduler API
   useEffect(() => {
     Promise.all([
       axios.get(GET_DAYS),
@@ -28,6 +30,7 @@ export default function useApplicationData() {
     })
   }, []);
 
+  // sets up WebSockets
   useEffect(() => {
     const webSocket = new WebSocket("ws://localhost:8001");
     webSocket.onmessage = function(event) {
@@ -39,18 +42,17 @@ export default function useApplicationData() {
     }
   }, []);
 
+  // book a new interview or update an existing one
   function bookInterview(id, interview) {
-    let update = false;
-    if (state.appointments[id].interview) {
-      update = true;
-    }
+    const updateExisting = state.appointments[id].interview ? true : false;
+
     return axios.put(`/api/appointments/${id}`, { interview })
     .then(() => {
       const days = state.days.map(day => {
         if (day.name === state.day) {
           return {
             ...day,
-            spots: update ? day.spots : --day.spots
+            spots: updateExisting ? day.spots : --day.spots
           }
         }
         else {
@@ -60,6 +62,7 @@ export default function useApplicationData() {
       dispatch({ type: SET_INTERVIEW, interview, days, id });
     });
   }
+
 
   function cancelInterview(id) {
     return axios.delete(`/api/appointments/${id}`)

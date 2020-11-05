@@ -1,3 +1,4 @@
+// returns array of appointment objects for given day
 export function getAppointmentsForDay(state, day) {
   if (state.days.length === 0) {
     return [];
@@ -13,6 +14,7 @@ export function getAppointmentsForDay(state, day) {
   return result;
 };
 
+// returns array of interviewer objects for given day
 export function getInterviewersForDay(state, day) {
   if (state.days.length === 0) {
     return [];

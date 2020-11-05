@@ -6,6 +6,7 @@ import Form from "components/Appointment/Form";
 
 afterEach(cleanup);
 
+// integration tests for the interview form functionality
 describe("Form", () => {
   const interviewers = [
     {
