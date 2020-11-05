@@ -6,7 +6,9 @@ Production build, deployed using CircleCI (Continuous Integration), Heroku (API 
 ## Screenshots
 
 
-!["New interview"](https://github.com/amarkham1/scheduler/blob/master/docs/New-Interview.png?raw=true)\
+!["New interview"](https://github.com/amarkham1/scheduler/blob/master/docs/New-Interview.png?raw=true)
+
+
 
 !["Confirm delete"](https://github.com/amarkham1/scheduler/blob/master/docs/Confirm-Delete.png?raw=true)
 
